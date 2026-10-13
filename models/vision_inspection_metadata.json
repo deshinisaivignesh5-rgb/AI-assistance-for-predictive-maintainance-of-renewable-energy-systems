@@ -1,0 +1,55 @@
+{
+  "model_filename": "vision_inspection_model.h5",
+  "metadata_filename": "vision_inspection_metadata.json",
+  "image_size": [
+    64,
+    64
+  ],
+  "color_mode": "grayscale",
+  "threshold": 0.3,
+  "profile": {
+    "profile_id": "solar_elpv",
+    "display_name": "Dual-purpose renewable inspection module",
+    "dataset_name": "ELPV solar electroluminescence dataset",
+    "dataset_note": "The platform supports both wind operational screening and image-based inspection. The bundled public image demo uses solar electroluminescence imagery because that is the available open dataset in this workspace.",
+    "task": "Binary renewable-energy image defect classification",
+    "image_size": [
+      64,
+      64
+    ],
+    "color_mode": "grayscale",
+    "threshold": 0.5,
+    "label_map": {
+      "0": "Healthy / low-defect asset image",
+      "1": "Defective asset image"
+    }
+  },
+  "label_map": {
+    "0": "Healthy / low-defect asset image",
+    "1": "Defective asset image"
+  },
+  "defaults": {
+    "sample_image": "C:\\Users\\DELL\\OneDrive\\Desktop\\Vignesh\\renewable_ai_maintenance\\data\\raw\\elpv-dataset\\src\\elpv_dataset\\data\\images\\cell0880.png"
+  },
+  "metrics": {
+    "accuracy": 0.7333,
+    "precision": 0.5561,
+    "recall": 0.7256,
+    "f1": 0.6296,
+    "roc_auc": 0.8135,
+    "specificity": 0.7368,
+    "sensitivity": 0.7256,
+    "train_images": 1784,
+    "validation_images": 315,
+    "test_images": 525,
+    "epochs_ran": 12,
+    "threshold": 0.3,
+    "backend": "tensorflow",
+    "confusion_matrix": {
+      "true_negative": 266,
+      "false_positive": 95,
+      "false_negative": 45,
+      "true_positive": 119
+    }
+  }
+}

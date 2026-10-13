@@ -1,0 +1,112 @@
+{
+  "project_title": "Renewable AI Maintenance Assistant",
+  "report_alignment": {
+    "summary": [
+      "This is a dual-purpose renewable maintenance platform with both wind analytics and visual inspection.",
+      "The wind side screens SCADA behavior for maintenance risk, and the vision side runs CNN-based defect inspection.",
+      "AI provides triage support while humans keep the final maintenance decision.",
+      "The public visual dataset is solar electroluminescence, but the platform structure is reusable for other renewable asset images."
+    ],
+    "seminar_reference": {
+      "specificity": 0.91,
+      "sensitivity": 0.89,
+      "context": "Values cited in the seminar report for the CNN-based inspection study."
+    },
+    "current_scope": "The platform supports both wind operational screening and image-based inspection. The bundled public image demo uses solar electroluminescence imagery because that is the available open dataset in this workspace."
+  },
+  "datasets": {
+    "wind": {
+      "source": "https://raw.githubusercontent.com/n-sapkota/Fault-Detection-wind-turbine/main/wt.csv",
+      "rows": 85066,
+      "task": "Wind turbine operational anomaly detection"
+    },
+    "vision": {
+      "source": "https://github.com/zae-bayern/elpv-dataset",
+      "images": 2624,
+      "task": "Binary renewable-energy image defect classification",
+      "profile_id": "solar_elpv",
+      "display_name": "ELPV solar electroluminescence dataset"
+    }
+  },
+  "models": {
+    "wind": {
+      "training_rows": 30000,
+      "inference_rows": 85066,
+      "feature_count": 15,
+      "estimated_high_risk_rate": 0.08,
+      "risk_band_counts": {
+        "High": 6806,
+        "Elevated": 14461,
+        "Watch": 25519,
+        "Stable": 38280
+      }
+    },
+    "vision": {
+      "accuracy": 0.7333,
+      "precision": 0.5561,
+      "recall": 0.7256,
+      "f1": 0.6296,
+      "roc_auc": 0.8135,
+      "specificity": 0.7368,
+      "sensitivity": 0.7256,
+      "train_images": 1784,
+      "validation_images": 315,
+      "test_images": 525,
+      "epochs_ran": 12,
+      "threshold": 0.3,
+      "backend": "tensorflow",
+      "confusion_matrix": {
+        "true_negative": 266,
+        "false_positive": 95,
+        "false_negative": 45,
+        "true_positive": 119
+      }
+    }
+  },
+  "plots": {
+    "wind": [
+      {
+        "title": "Wind Score Distribution",
+        "path": "plots/wind_score_distribution.png",
+        "description": "Histogram of wind anomaly scores with the three operational alert thresholds."
+      },
+      {
+        "title": "Wind Risk Bands",
+        "path": "plots/wind_risk_bands.png",
+        "description": "Count of records that fall into stable, watch, elevated, and high-risk monitoring bands."
+      }
+    ],
+    "vision": [
+      {
+        "title": "Vision Class Distribution",
+        "path": "plots/vision_class_distribution.png",
+        "description": "Healthy versus defective image counts in the bundled public inspection dataset."
+      },
+      {
+        "title": "Vision Training over Epochs",
+        "path": "plots/vision_training_history.png",
+        "description": "Training and validation curves across epochs so you can inspect convergence behavior."
+      },
+      {
+        "title": "Vision Confusion Matrix",
+        "path": "plots/vision_confusion_matrix.png",
+        "description": "True versus predicted defect decisions on the held-out image test set."
+      },
+      {
+        "title": "Vision ROC Curve",
+        "path": "plots/vision_roc_curve.png",
+        "description": "Receiver operating characteristic curve for the image classifier on the test split."
+      },
+      {
+        "title": "Vision Metric Overview",
+        "path": "plots/vision_metric_overview.png",
+        "description": "Side-by-side view of the main evaluation metrics for the current image model."
+      },
+      {
+        "title": "Vision vs Report Benchmark",
+        "path": "plots/vision_report_comparison.png",
+        "description": "Comparison of the current model against the report's cited specificity and sensitivity values."
+      }
+    ]
+  }
+}

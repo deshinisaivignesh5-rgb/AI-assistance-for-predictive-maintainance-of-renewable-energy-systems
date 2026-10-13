@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance - Renewable Energy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('https://images.unsplash.com/photo-1466611653911-95081537e5b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: rgba(0, 123, 255, 0.9);
+            padding: 10px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+        header p {
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+        .container,
+        .dashboard-grid,
+        .plot-grid {
+            width: min(1400px, calc(100% - 24px));
+            margin: 12px auto;
+            display: grid;
+            gap: 14px;
+        }
+        .container {
+            grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr);
+            align-items: start;
+        }
+        .dashboard-grid,
+        .plot-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .card,
+        .plot-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 14px 16px;
+            color: #333;
+        }
+        .card h2,
+        .plot-card h3 {
+            margin-bottom: 8px;
+            color: #007bff;
+            font-size: 1.05rem;
+            text-align: center;
+        }
+        .subtext,
+        .note,
+        .plot-card p {
+            margin-bottom: 12px;
+            color: #5c6670;
+            text-align: center;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .form-group,
+        .metrics,
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.8rem;
+        }
+        input[type="number"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d8d8d8;
+            border-radius: 7px;
+            font-size: 13px;
+            background: #fff;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="number"]:focus,
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.35);
+        }
+        .hint {
+            color: #6c757d;
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+        .actions {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        .actions p {
+            color: #6c757d;
+            font-size: 0.78rem;
+            text-align: center;
+            line-height: 1.5;
+        }
+        button {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 240px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .result {
+            margin-top: 6px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .result h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .result p {
+            font-size: 0.84rem;
+            line-height: 1.5;
+        }
+        .placeholder {
+            border: 1px dashed #c7d4df;
+            background: #f9fbfd;
+            color: #66717c;
+        }
+        .metrics {
+            margin-top: 10px;
+        }
+        .metric,
+        .summary-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .metric span,
+        .summary-item span {
+            display: block;
+            color: #6c757d;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+        .metric strong,
+        .summary-item strong {
+            font-size: 0.92rem;
+            color: #22303d;
+        }
+        .section-title {
+            margin: 12px 0 8px;
+            color: #007bff;
+            font-size: 0.95rem;
+        }
+        .low-risk {
+            background: #e9f7ef !important;
+            border-left: 5px solid #28a745 !important;
+            color: #155724 !important;
+        }
+        .medium-risk {
+            background: #fff3cd !important;
+            border-left: 5px solid #ffc107 !important;
+            color: #856404 !important;
+        }
+        .high-risk {
+            background: #f8d7da !important;
+            border-left: 5px solid #dc3545 !important;
+            color: #721c24 !important;
+        }
+        .preview {
+            margin-top: 12px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .preview img,
+        .plot-card img {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
+        }
+        .plot-card img {
+            margin-bottom: 10px;
+            border: 1px solid #d8d8d8;
+            background: #fff;
+        }
+        .section-block {
+            width: min(1400px, calc(100% - 24px));
+            margin: 0 auto 12px;
+        }
+        .section-block h2 {
+            color: #fff;
+            margin: 6px 4px 8px;
+            font-size: 1.05rem;
+        }
+        .mode-panel {
+            display: none;
+        }
+        .mode-panel.active {
+            display: block;
+        }
+        .alert {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 5px solid #dc3545;
+            border-radius: 10px;
+            color: #721c24;
+        }
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 6px;
+            font-size: 0.75rem;
+            margin-top: auto;
+        }
+        @media (max-width: 1100px) {
+            .container,
+            .dashboard-grid,
+            .plot-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 680px) {
+            .form-group,
+            .metrics,
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .container,
+            .dashboard-grid,
+            .plot-grid,
+            .section-block {
+                width: min(100% - 16px, 1400px);
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% set models = metrics.get('models', {}) %}
+    {% set wind_model = models.get('wind', {}) %}
+    {% set vision_model = models.get('vision', {}) %}
+    {% set confusion = vision_model.get('confusion_matrix', {}) %}
+    {% set benchmark = metrics.get('report_alignment', {}).get('seminar_reference', {}) %}
+    {% set wind_plots = plot_groups.get('wind', []) %}
+    {% set vision_plots = plot_groups.get('vision', []) %}
+
+    <header>
+        <h1>Renewable Energy Predictive Maintenance</h1>
+        <p>Reference-style dashboard for both wind monitoring and image-based inspection</p>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Enter System Parameters</h2>
+            <p class="subtext">This version keeps the simpler reference layout while supporting both wind operational risk and image defect inspection.</p>
+
+            {% if error_message %}
+            <div class="alert">{{ error_message }}</div>
+            {% endif %}
+
+            <form action="/predict" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div>
+                        <label for="analysis_mode">Analysis Mode</label>
+                        <select id="analysis_mode" name="analysis_mode" required>
+                            {% for value, label in mode_options %}
+                            <option value="{{ value }}" {% if analysis_mode == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="profile_note">Current Visual Profile</label>
+                        <input id="profile_note" type="text" value="{{ vision_profile.get('dataset_name', 'ELPV solar electroluminescence dataset') }}" readonly>
+                    </div>
+                </div>
+
+                <div id="wind-panel" class="mode-panel {% if analysis_mode == 'wind' %}active{% endif %}">
+                    <div class="form-group">
+                        {% for key, label in wind_fields %}
+                        <div>
+                            <label for="{{ key }}">{{ label }}</label>
+                            <input id="{{ key }}" type="number" step="any" name="{{ key }}" value="{{ wind_form[key] }}">
+                        </div>
+                        {% endfor %}
+                        <div class="full-width">
+                            <p class="hint">Wind mode uses the trained anomaly model and automatically recomputes derived ratios and temperature gaps before prediction.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="vision-panel" class="mode-panel {% if analysis_mode == 'vision' %}active{% endif %}">
+                    <div class="form-group">
+                        <div class="full-width">
+                            <label for="vision_image">Inspection Image</label>
+                            <input id="vision_image" type="file" name="vision_image" accept="image/*">
+                        </div>
+                        <div>
+                            <label>Dataset</label>
+                            <input type="text" value="{{ vision_profile.get('dataset_name', 'ELPV solar electroluminescence dataset') }}" readonly>
+                        </div>
+                        <div>
+                            <label>Workflow</label>
+                            <input type="text" value="TensorFlow CNN defect inspection" readonly>
+                        </div>
+                        <div class="full-width">
+                            <p class="hint">{{ vision_profile.get('dataset_note', 'Upload an image to run the visual defect inspection workflow.') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <p>The page follows the same left-input and right-output style as your reference project, but now keeps both project purposes and the extra evaluation outputs.</p>
+                    <button type="submit">Predict Maintenance Risk</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card result-card">
+            <h2>Prediction Output</h2>
+            {% if prediction_text %}
+            <div class="result {{ risk_level }}-risk">
+                <h3>{{ prediction_text }}</h3>
+                <p>{{ reason_text }}</p>
+            </div>
+
+            {% if vision_preview %}
+            <div class="preview">
+                <img src="{{ vision_preview }}" alt="Uploaded inspection image preview">
+            </div>
+            {% endif %}
+
+            <div class="metrics">
+                {% for item in result_metrics %}
+                <div class="metric">
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.value }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h3 class="section-title">Input Summary</h3>
+            <div class="summary-grid">
+                {% for item in summary_items %}
+                <div class="summary-item">
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.value }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="result placeholder">
+                <h3>Waiting For Prediction</h3>
+                <p>Choose wind or vision mode, submit the form, and the right panel will show the prediction, metrics, and summary values.</p>
+            </div>
+
+            <h3 class="section-title">What Will Appear Here</h3>
+            <div class="summary-grid">
+                <div class="summary-item"><span>Risk Level</span><strong>Low / Medium / High</strong></div>
+                <div class="summary-item"><span>Main Score</span><strong>Anomaly score or defect probability</strong></div>
+                <div class="summary-item"><span>Mode</span><strong>Wind or vision workflow</strong></div>
+                <div class="summary-item"><span>Threshold</span><strong>Saved decision threshold</strong></div>
+                <div class="summary-item"><span>Summary</span><strong>Selected inputs or uploaded image details</strong></div>
+                <div class="summary-item"><span>Reason</span><strong>Model-based explanation text</strong></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>Model Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item"><span>Wind Records</span><strong>{{ metrics.get('datasets', {}).get('wind', {}).get('rows', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Wind High-Risk Rate</span><strong>{{ wind_model.get('estimated_high_risk_rate', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Vision Accuracy</span><strong>{{ vision_model.get('accuracy', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Vision F1 Score</span><strong>{{ vision_model.get('f1', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Vision Specificity</span><strong>{{ vision_model.get('specificity', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Vision Sensitivity</span><strong>{{ vision_model.get('sensitivity', 'N/A') }}</strong></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Confusion Matrix Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item"><span>True Negative</span><strong>{{ confusion.get('true_negative', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>False Positive</span><strong>{{ confusion.get('false_positive', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>False Negative</span><strong>{{ confusion.get('false_negative', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>True Positive</span><strong>{{ confusion.get('true_positive', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Report Specificity</span><strong>{{ benchmark.get('specificity', 'N/A') }}</strong></div>
+                <div class="summary-item"><span>Report Sensitivity</span><strong>{{ benchmark.get('sensitivity', 'N/A') }}</strong></div>
+            </div>
+        </div>
+    </div>
+
+    {% if wind_plots %}
+    <div class="section-block">
+        <h2>Wind Visualizations</h2>
+    </div>
+    <div class="plot-grid">
+        {% for plot in wind_plots %}
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename=plot.path) }}" alt="{{ plot.title }}">
+            <h3>{{ plot.title }}</h3>
+            <p>{{ plot.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if vision_plots %}
+    <div class="section-block">
+        <h2>Vision Visualizations</h2>
+    </div>
+    <div class="plot-grid">
+        {% for plot in vision_plots %}
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename=plot.path) }}" alt="{{ plot.title }}">
+            <h3>{{ plot.title }}</h3>
+            <p>{{ plot.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <footer>
+        <p>&copy; 2026 Renewable Energy Predictive Maintenance dashboard for wind and image-based asset monitoring.</p>
+    </footer>
+
+    <script>
+        const modeSelect = document.getElementById('analysis_mode');
+        const windPanel = document.getElementById('wind-panel');
+        const visionPanel = document.getElementById('vision-panel');
+        function togglePanels() {
+            const isWind = modeSelect.value === 'wind';
+            windPanel.classList.toggle('active', isWind);
+            visionPanel.classList.toggle('active', !isWind);
+        }
+        modeSelect.addEventListener('change', togglePanels);
+        togglePanels();
+    </script>
+</body>
+</html>
